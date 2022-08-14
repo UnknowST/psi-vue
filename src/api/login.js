@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import qs from 'qs'
 
 // 登录方法
 export function login(username, password, code, uuid) {
@@ -14,7 +15,7 @@ export function login(username, password, code, uuid) {
       isToken: false
     },
     method: 'post',
-    data: data
+    data: {"username":data.username,"password":data.password}
   })
 }
 
