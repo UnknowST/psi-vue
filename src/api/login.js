@@ -22,12 +22,26 @@ export function login(username, password, code, uuid) {
 // 注册方法
 export function register(data) {
   return request({
-    url: '/register',
+    url: '/user/register',
     headers: {
       isToken: false
     },
     method: 'post',
     data: data
+  })
+}
+
+//发送邮件验证码
+
+export function sendemail(email){
+  return request({
+    url:'/user/sendemail',
+    headers:{
+      isToken:false,
+     
+    },
+    method:'post',
+    data:{email:email}
   })
 }
 

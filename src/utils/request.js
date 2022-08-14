@@ -12,6 +12,9 @@ let downloadLoadingInstance;
 export let isRelogin = { show: false };
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
+
+//这样 改 post到后端的数据 才能被接收 但是 get到的数据 还是不是 json格式 还有待确定
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 // 创建axios实例
 const service = axios.create({
   // axios中请求配置有baseURL选项，表示请求URL公共部分

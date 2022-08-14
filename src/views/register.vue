@@ -1,10 +1,24 @@
 <template>
   <div class="register">
-    <el-form ref="registerForm" :model="registerForm" :rules="registerRules" class="register-form">
-      <h3 class="title">若依后台管理系统</h3>
-      <el-form-item prop="username">
-        <el-input v-model="registerForm.username" type="text" auto-complete="off" placeholder="账号">
-          <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
+    <el-form
+      ref="registerForm"
+      :model="registerForm"
+      :rules="registerRules"
+      class="register-form"
+    >
+      <h3 class="title">PSI Project</h3>
+      <el-form-item prop="name">
+        <el-input
+          v-model="registerForm.name"
+          type="text"
+          auto-complete="off"
+          placeholder="姓名"
+        >
+          <svg-icon
+            slot="prefix"
+            icon-class="user"
+            class="el-input__icon input-icon"
+          />
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
@@ -15,7 +29,11 @@
           placeholder="密码"
           @keyup.enter.native="handleRegister"
         >
-          <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
+          <svg-icon
+            slot="prefix"
+            icon-class="password"
+            class="el-input__icon input-icon"
+          />
         </el-input>
       </el-form-item>
       <el-form-item prop="confirmPassword">
@@ -26,10 +44,66 @@
           placeholder="确认密码"
           @keyup.enter.native="handleRegister"
         >
-          <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
+          <svg-icon
+            slot="prefix"
+            icon-class="password"
+            class="el-input__icon input-icon"
+          />
         </el-input>
       </el-form-item>
-      <el-form-item prop="code" v-if="captchaEnabled">
+      <el-form-item prop="phone">
+        <el-input
+          v-model="registerForm.phone"
+          type="phone"
+          auto-complete="off"
+          placeholder="电话"
+          @keyup.enter.native="handleRegister"
+        >
+          <svg-icon
+            slot="prefix"
+            icon-class="password"
+            class="el-input__icon input-icon"
+          />
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="gender" label="性别">
+        <el-radio-group
+          v-model="registerForm.gender"
+          @keyup.enter.native="handleRegister"
+        >
+          <el-radio label="W"></el-radio>
+          <el-radio label="M"></el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item prop="email">
+        <el-input
+          v-model="registerForm.email"
+          auto-complete="off"
+          placeholder="邮箱地址"
+          style="width: 63%"
+          @keyup.enter.native="handleRegister"
+        >
+          <svg-icon
+            slot="prefix"
+            icon-class="email"
+            class="el-input__icon input-icon"
+          />
+        </el-input>
+        <div class="register-code">
+          <el-button
+            :loading="loding"
+            size="small"
+            type="primary"
+            style="width: 100%"
+            @click.native.prevent="sendemail1"
+          >
+            <span v-if="!loading">发送验证码</span>
+            <span v-else>发送中...</span>
+          </el-button>
+        </div>
+      </el-form-item>
+
+      <el-form-item prop="code">
         <el-input
           v-model="registerForm.code"
           auto-complete="off"
@@ -37,25 +111,28 @@
           style="width: 63%"
           @keyup.enter.native="handleRegister"
         >
-          <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
+          <svg-icon
+            slot="prefix"
+            icon-class="validateCode"
+            class="el-input__icon input-icon"
+          />
         </el-input>
-        <div class="register-code">
-          <img :src="codeUrl" @click="getCode" class="register-code-img"/>
-        </div>
       </el-form-item>
-      <el-form-item style="width:100%;">
+      <el-form-item style="width: 100%">
         <el-button
           :loading="loading"
           size="medium"
           type="primary"
-          style="width:100%;"
+          style="width: 100%"
           @click.native.prevent="handleRegister"
         >
           <span v-if="!loading">注 册</span>
           <span v-else>注 册 中...</span>
         </el-button>
-        <div style="float: right;">
-          <router-link class="link-type" :to="'/login'">使用已有账户登录</router-link>
+        <div style="float: right">
+          <router-link class="link-type" :to="'/login'"
+            >使用已有账户登录</router-link
+          >
         </div>
       </el-form-item>
     </el-form>
@@ -67,7 +144,7 @@
 </template>
 
 <script>
-import { getCodeImg, register } from "@/api/login";
+import { getCodeImg, register, sendemail } from "@/api/login";
 
 export default {
   name: "Register",
@@ -82,29 +159,45 @@ export default {
     return {
       codeUrl: "",
       registerForm: {
-        username: "",
+        name: "",
         password: "",
         confirmPassword: "",
+        email: "",
+        gender: "",
+        phone: "",
         code: "",
-        uuid: ""
+        uuid: "",
       },
       registerRules: {
         username: [
           { required: true, trigger: "blur", message: "请输入您的账号" },
-          { min: 2, max: 20, message: '用户账号长度必须介于 2 和 20 之间', trigger: 'blur' }
+          {
+            min: 2,
+            max: 20,
+            message: "用户账号长度必须介于 2 和 20 之间",
+            trigger: "blur",
+          },
         ],
         password: [
           { required: true, trigger: "blur", message: "请输入您的密码" },
-          { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' }
+          {
+            min: 5,
+            max: 20,
+            message: "用户密码长度必须介于 5 和 20 之间",
+            trigger: "blur",
+          },
         ],
         confirmPassword: [
           { required: true, trigger: "blur", message: "请再次输入您的密码" },
-          { required: true, validator: equalToPassword, trigger: "blur" }
+          { required: true, validator: equalToPassword, trigger: "blur" },
         ],
-        code: [{ required: true, trigger: "change", message: "请输入验证码" }]
+        gender: [{ required: true, trigger: "blur", message: "性别不能为空" }],
+        email: [{ required: true, trigger: "blur", message: "请输入邮箱！" }],
+        phone: [{ required: true, trigger: "blur", message: "请输入电话！" }],
+        code: [{ required: true, trigger: "change", message: "请输入验证码" }],
       },
       loading: false,
-      captchaEnabled: true
+      captchaEnabled: true,
     };
   },
   created() {
@@ -112,8 +205,9 @@ export default {
   },
   methods: {
     getCode() {
-      getCodeImg().then(res => {
-        this.captchaEnabled = res.captchaEnabled === undefined ? true : res.captchaEnabled;
+      getCodeImg().then((res) => {
+        this.captchaEnabled =
+          res.captchaEnabled === undefined ? true : res.captchaEnabled;
         if (this.captchaEnabled) {
           this.codeUrl = "data:image/gif;base64," + res.img;
           this.registerForm.uuid = res.uuid;
@@ -121,27 +215,47 @@ export default {
       });
     },
     handleRegister() {
-      this.$refs.registerForm.validate(valid => {
+      this.$refs.registerForm.validate((valid) => {
         if (valid) {
           this.loading = true;
-          register(this.registerForm).then(res => {
-            const username = this.registerForm.username;
-            this.$alert("<font color='red'>恭喜你，您的账号 " + username + " 注册成功！</font>", '系统提示', {
-              dangerouslyUseHTMLString: true,
-              type: 'success'
-            }).then(() => {
-              this.$router.push("/login");
-            }).catch(() => {});
-          }).catch(() => {
-            this.loading = false;
-            if (this.captchaEnabled) {
-              this.getCode();
-            }
-          })
+          register(this.registerForm)
+            .then((res) => {
+              const username = this.registerForm.username;
+              this.$alert(
+                "<font color='red'>恭喜你，您的账号 " +
+                  username +
+                  " 注册成功！</font>",
+                "系统提示",
+                {
+                  dangerouslyUseHTMLString: true,
+                  type: "success",
+                }
+              )
+                .then(() => {
+                  this.$router.push("/login");
+                })
+                .catch(() => {});
+            })
+            .catch(() => {
+              this.loading = false;
+              if (this.captchaEnabled) {
+                this.getCode();
+              }
+            });
         }
       });
-    }
-  }
+    },
+    sendemail1() {
+      this.$refs.registerForm.validateField("email", (valid) => {
+        if (!valid) {
+          console.log(123);
+          sendemail(this.registerForm.email).then((res) => {
+            console.log(res);
+          });
+        }
+      });
+    },
+  },
 };
 </script>
 
